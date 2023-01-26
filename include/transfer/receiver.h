@@ -170,7 +170,7 @@ template <uint64_t n> void transfer::receiver<n>::check_way(std::string& way) {
     try {
         directory_iterator object(way.substr(0, sl)), end;
         for (; object != end && object->path().string() != way; object++) {}
-        if (object == end) throw std::invalid_argument(error);
+        if (object == end || !is_directory(*object)) throw std::invalid_argument(error);
     }
     catch (std::exception e) {
         log.write_error(way, error);

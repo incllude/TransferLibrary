@@ -5,7 +5,6 @@
 #include <filesystem>
 #include <transfer/run.h>
 #include <transfer/sender.h>
-#include <transfer/receiver.h>
 
 using namespace std;
 using namespace transfer;
@@ -22,6 +21,7 @@ int main() {
     uint64_t size_of_pack, file_name, safe, port = 4000;
     string ip_address, cur_way = filesystem::current_path().string();
     cur_way = cur_way.substr(0, cur_way.rfind("test") + 4);
+    cout << cur_way << '\n';
 
     vector<uint64_t> available_sizes = {1024, 1048576, 268435456};
     vector<string> available_files = {"archive.zip", "constitution.pdf", "orwell_1984.txt", "kotik.gif"};
@@ -71,3 +71,4 @@ int main() {
 
     return 0;
 }
+

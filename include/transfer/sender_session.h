@@ -159,7 +159,7 @@ template <uint64_t n> void transfer::sender_session<n>::send_file(recursive_dire
     if (file == end || file->path().string() == final_path) return;
 
     if (is_directory(*file)) type = "folder";
-    if (is_regular(*file)) type = "regular";
+    if (is_regular_file(*file)) type = "regular";
     auto parts = get_file(file->path().string());
     add_way = parts["way"].substr(way.size());
     extension = parts["extension"];
@@ -334,7 +334,7 @@ template <uint64_t n> int transfer::sender_session<n>::check_way() {
         next++;
         std::string next_way;
         if (next != d_end) next_way = next->path().string();
-        for (; object != end && object->path().string() != next_way; object++) if (is_regular(*object)) files++;
+        for (; object != end && object->path().string() != next_way; object++) if (is_regular_file(*object)) files++;
     }
     catch (std::exception e) {
         write_error(error);

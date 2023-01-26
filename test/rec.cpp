@@ -4,7 +4,6 @@
 #include <filesystem>
 #include <transfer/run.h>
 #include <transfer/receiver.h>
-#include <boost/filesystem.hpp>
 
 using namespace std;
 using namespace transfer;

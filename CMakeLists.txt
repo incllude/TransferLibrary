@@ -1,11 +1,25 @@
-cmake_minimum_required(VERSION 3.22)
+cmake_minimum_required(VERSION 3.0)
 
-set(CMAKE_CXX_STANDARD 23)
+set(CMAKE_CXX_STANDARD 20)
 set(namespace "transfer")
 project("transfer" VERSION 0.99 DESCRIPTION "Library to transfer files throw TCP/IP")
 
-find_package(Boost COMPONENTS asio filesystem log log_setup)
-include_directories(${Boost_INCLUDE_DIRS})
+set(CPM_DOWNLOAD_VERSION 0.36.0) 
+set(CPM_DOWNLOAD_LOCATION "${CMAKE_BINARY_DIR}/cmake/CPM_${CPM_DOWNLOAD_VERSION}.cmake")
+
+if(NOT (EXISTS ${CPM_DOWNLOAD_LOCATION}))
+    message(STATUS "Downloading CPM.cmake")
+    file(DOWNLOAD https://github.com/TheLartians/CPM.cmake/releases/download/v${CPM_DOWNLOAD_VERSION}/CPM.cmake ${CPM_DOWNLOAD_LOCATION})
+endif()
+
+include(${CPM_DOWNLOAD_LOCATION})
+
+CPMAddPackage(
+  NAME Boost
+  VERSION 1.81.0
+  GITHUB_REPOSITORY "boostorg/boost"
+  GIT_TAG "boost-1.81.0"
+)
 
 add_library(${PROJECT_NAME} STATIC)
 
@@ -13,7 +27,7 @@ target_sources(${PROJECT_NAME} PRIVATE src/logger.cpp)
 target_sources(${PROJECT_NAME} PRIVATE src/service.cpp)
 target_sources(${PROJECT_NAME} PRIVATE src/run.cpp)
 
-target_link_libraries(${PROJECT_NAME} ${Boost_LIBRARIES})
+target_link_libraries(${PROJECT_NAME} Boost::asio Boost::filesystem Boost::log_setup Boost::log)
 
 target_include_directories(${PROJECT_NAME} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src
         PUBLIC
@@ -21,7 +35,7 @@ target_include_directories(${PROJECT_NAME} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/s
         $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
         )
 
-set(public_headers include/logger.h include/service.h include/sender_session.h include/receiver_session.h include/run.h include/sender.h include/receiver.h)
+set(public_headers include/transfer/logger.h include/transfer/service.h include/transfer/sender_session.h include/transfer/receiver_session.h include/transfer/run.h include/transfer/sender.h include/transfer/receiver.h)
 
 if(CMAKE_COMPILER_IS_GNUCXX)
     target_compile_options(${PROJECT_NAME} PRIVATE -Werror)
@@ -63,41 +77,9 @@ install(
         INCLUDES DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
 )
 
-install(
-        EXPORT "${PROJECT_NAME}Targets"
-        FILE "${PROJECT_NAME}Targets.cmake"
-        NAMESPACE ${namespace}::
-        DESTINATION cmake
-        COMPONENT ${PROJECT_NAME}
-)
-
-include(CMakePackageConfigHelpers)
-
-
-write_basic_package_version_file(
-        "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}ConfigVersion.cmake"
-        VERSION "${version}"
-        COMPATIBILITY AnyNewerVersion
-)
-
-configure_package_config_file(
-        ${CMAKE_CURRENT_SOURCE_DIR}/Config.cmake.in
-        "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}Config.cmake"
-        INSTALL_DESTINATION cmake
-)
+add_subdirectory(test)
 
 install(
-        FILES
-        "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}Config.cmake"
-        "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}ConfigVersion.cmake"
-        DESTINATION cmake
-        COMPONENT ${PROJECT_NAME}
+        TARGETS rec sen
+        DESTINATION ${PROJECT_SOURCE_DIR}/test
 )
-
-export(
-        EXPORT "${PROJECT_NAME}Targets"
-        FILE "${CMAKE_CURRENT_BINARY_DIR}/cmake/${PROJECT_NAME}Targets.cmake"
-        NAMESPACE ${namespace}::
-)
-
-#add_subdirectory(test)
