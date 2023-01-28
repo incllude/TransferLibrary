@@ -80,6 +80,6 @@ install(
 add_subdirectory(test)
 
 install(
-        TARGETS rec sen
+        TARGETS test
         DESTINATION ${PROJECT_SOURCE_DIR}/test
 )
