@@ -1,10 +1,7 @@
-add_executable(rec rec.cpp)
-add_executable(sen sen.cpp)
+add_executable(test test.cpp)
 
-target_link_libraries(rec transfer)
-target_link_libraries(sen transfer)
+target_link_libraries(test transfer)
 
 if(WIN32)
-    target_link_libraries(rec ws2_32)
-    target_link_libraries(sen ws2_32)
+    target_link_libraries(test ws2_32)
 endif()

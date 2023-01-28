@@ -9,8 +9,8 @@
 #include <stdint.h>
 #include "logger.h"
 #include "service.h"
-#include <boost/bind.hpp>
 #include <boost/array.hpp>
+#include <boost/bind/bind.hpp>
 #include <boost/filesystem.hpp>
 
 

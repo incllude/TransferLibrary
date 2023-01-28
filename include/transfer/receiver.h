@@ -24,6 +24,7 @@ namespace transfer {
         char slash = '\\';
 #endif
 
+        short port;
         std::string default_add;
         std::string default_way;
         ip::tcp::acceptor acceptor;
@@ -52,7 +53,9 @@ namespace transfer {
          */
 
         receiver(const short port, const std::string way) :
-                acceptor(*(service::get_io()), ip::tcp::endpoint(tcp::v4(), port)) {
+                acceptor(*(service::get_io()), ip::tcp::endpoint(tcp::v4(), port)), port(port) {
+            
+            acceptor.close();
 
             if (size_of_pack == 0) throw std::invalid_argument("Pack's size can not equal to 0");
             std::string cur_way = way;
@@ -69,7 +72,9 @@ namespace transfer {
          * @param add - добавочнаяя часть, которая будет записана в конце имени каждого полученного файла. Если это папка, имя папки не изменится
          */
         receiver(const short port, const std::string way, const std::string add) :
-                acceptor(*(service::get_io()), ip::tcp::endpoint(tcp::v4(), port)), default_add(add) {
+                acceptor(*(service::get_io()), ip::tcp::endpoint(tcp::v4(), port)), default_add(add), port(port) {
+
+            acceptor.close();
 
             if (size_of_pack == 0) throw std::invalid_argument("Pack's size can not equal to 0");
             std::string cur_way = way;
@@ -179,11 +184,15 @@ template <uint64_t n> void transfer::receiver<n>::check_way(std::string& way) {
 }
 
 template <uint64_t n> void transfer::receiver<n>::do_accept(const std::string add, const std::string way) {
+    if (!acceptor.is_open()) acceptor.operator=(ip::tcp::acceptor(*(service::get_io()), ip::tcp::endpoint(tcp::v4(), port)));
 
     acceptor.async_accept([this, add, way](boost::system::error_code error, ip::tcp::socket socket) {
         if (!error)
             std::make_shared<transfer::receiver_session<n>>(std::move(socket), way, &log, add, &acceptor, slash)->run();
-        if (error) do_accept(add, way);
+        if (error) {
+            std::cout << error.message() << '\n';
+            do_accept(add, way);
+        }
     });
 }
 

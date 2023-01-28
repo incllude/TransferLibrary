@@ -1,13 +1,12 @@
 #ifndef SERVICE_TRANSFER_H
 #define SERVICE_TRANSFER_H
+#define BOOST_BIND_GLOBAL_PLACEHOLDERS
 
 /*! \file service.h
  *  \brief Определение класса service
  */
 
 #include <map>
-#include <iostream>
-#include <fstream>
 #include <boost/asio.hpp>
 
 namespace transfer {

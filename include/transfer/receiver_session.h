@@ -11,9 +11,9 @@
 #include <iostream>
 #include "logger.h"
 #include <boost/asio.hpp>
-#include <boost/bind.hpp>
 #include <boost/array.hpp>
 #include <boost/regex.hpp>
+#include <boost/bind/bind.hpp>
 #include <boost/filesystem.hpp>
 
 
